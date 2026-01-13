@@ -1,9 +1,6 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  
-  # Serve motoserra.html for /motoserra route
-  RewriteRule ^motoserra/?$ motoserra.html [L]
 
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f
