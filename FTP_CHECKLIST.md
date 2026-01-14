@@ -24,10 +24,11 @@ Ensure your `public_html` folder looks EXACTLY like this on the server:
         └── index.html
 ```
 
-## 2. CRITICAL WARNINGS
--   **DO NOT** upload a `dist` folder into `public_html`. The *contents* of your local folder must go directly into `public_html`. If you see `/public_html/dist/...`, IT IS WRONG. Move the files up.
--   **DO NOT** rename `assets` to anything else.
--   **DO NOT** put `index.html` of sub-pages in the root naming them `lavadora.html`. They MUST be inside folders: `lavadora/index.html`.
+## 2. WARNINGS (READ THIS)
+-   **CRITICAL**: DO NOT upload the `dist` folder itself. Upload its **CONTENTS** to `public_html`.
+    -   WRONG: `/public_html/dist/assets/...`
+    -   RIGHT: `/public_html/assets/...`
+-   **CACHE**: Browser cache is the #1 cause of "it didn't work". Open an Incognito window to test.
 
 ## 3. Validation Tests
 After upload, perform these checks:

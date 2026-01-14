@@ -2,16 +2,25 @@
   RewriteEngine On
   RewriteBase /
   DirectoryIndex index.html
+  # Disable MultiViews to prevent Apache from confusing '/motoserra' with 'motoserra.html' (if it existed) or other magic guessing
+  Options -MultiViews
 
-  # 1. PROTECTED ROUTES: Do not rewrite these folders. Let Apache serve index.html inside them.
-  # This fixes the "White Screen" by preventing the SPA fallback from taking over.
-  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)(/.*)?$ - [L]
+  # 1. FORCE TRAILING SLASH (Fixes 404 on '/motoserra')
+  # If user requests /motoserra, redirect to /motoserra/
+  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)$ /$1/ [R=301,L]
 
-  # 2. ASSETS: Do not rewrite assets.
+  # 2. PROTECT STATIC ROUTES (Fixes White Screen / SPA Loop)
+  # If request starts with one of these folders (after slash is added), DO NOT rewrite. Serve the file.
+  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)/ - [L]
+
+  # 3. PROTECT ASSETS (Fixes 404 on JS/CSS)
   RewriteRule ^assets/ - [L]
   RewriteRule ^overrides\.(css|js)$ - [L]
+  RewriteRule ^favicon\.ico$ - [L]
+  RewriteRule ^robots\.txt$ - [L]
 
-  # 3. SPA FALLBACK: For everything else (unknown routes), serve the App.
+  # 4. SPA FALLBACK
+  # Check if file/dir exists. If not, serve root index.html
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
