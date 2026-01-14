@@ -1,8 +1,18 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
+  
+  # Set default index file
+  DirectoryIndex index.html
+
+  # Prevent looping if index.html is requested
   RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
+
+  # If correct file or directory exists, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Fallback to root index.html for SPA routing (if any) or 404 handling
   RewriteRule . /index.html [L]
 </IfModule>
