@@ -1,43 +1,16 @@
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  DirectoryIndex index.html
-  Options -MultiViews
 
-  # 1. SMART FIX: Check if "dist" folder was uploaded incorrectly
-  # If /assets/ doesn't exist, but /dist/assets/ DOES, silently rewrite.
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{DOCUMENT_ROOT}/dist/assets -d
-  RewriteRule ^assets/(.*)$ /dist/assets/$1 [L]
+RewriteEngine On
+RewriteBase /
 
-  # Same for static pages
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{DOCUMENT_ROOT}/dist/motoserra -d
-  RewriteRule ^motoserra/(.*)$ /dist/motoserra/$1 [L]
-  
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{DOCUMENT_ROOT}/dist/lavadora -d
-  RewriteRule ^lavadora/(.*)$ /dist/lavadora/$1 [L]
+# Se o arquivo ou diretório existe, sirva-o diretamente
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-  # 2. Force Trailing Slash for cleanliness
-  RewriteCond %{REQUEST_URI} !/$
-  RewriteCond %{REQUEST_URI} !^/dist/
-  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)$ /$1/ [R=301,L]
+# Se não existe e termina com /, tente index.html daquela pasta
+RewriteCond %{REQUEST_URI} /$
+RewriteCond %{REQUEST_FILENAME}index.html -f
+RewriteRule ^(.*)$ $1index.html [L]
 
-  # 3. Standard Fallback checks
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
-
-  # 4. SPA Fallback (try dist/index.html if root missing)
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{DOCUMENT_ROOT}/dist/index.html -f
-  RewriteRule . /dist/index.html [L]
-  
-  # 5. Ultimate Fallback
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule . /index.html [L]
-</IfModule>
+# Fallback (opcional, pode remover se não quiser SPA)
+# RewriteRule ^ index.html [L]
