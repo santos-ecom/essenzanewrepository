@@ -1,48 +1,46 @@
-# FTP Deployment Checklist
+# FTP Deployment Checklist (FINAL)
 
-Use this checklist to verify your deployment to Hostinger.
+## 1. Required File Structure (Public_html)
 
-## 1. File Structure Verification
+Ensure your `public_html` folder looks EXACTLY like this on the server:
 
-Ensure the following structure exists in your `public_html` folder on the server:
+```text
+/public_html
+  ├── .htaccess            <-- The NEW file provided below
+  ├── index.html           <-- Root homepage
+  ├── overrides.css
+  ├── overrides.js
+  ├── assets/              <-- FOLDER with all .css/.js/.png files
+  │     ├── index-DcQQoMRH.css
+  │     ├── index-DMFIf2t1.js
+  │     └── ... (other hash files)
+  ├── lavadora/            <-- FOLDER
+  │     └── index.html
+  ├── lavadora2/           <-- FOLDER
+  │     └── index.html
+  ├── motoserra/           <-- FOLDER
+  │     └── index.html
+  └── motoserra2/          <-- FOLDER
+        └── index.html
+```
 
-- [ ] `/public_html/.htaccess` (The file we just updated)
-- [ ] `/public_html/index.html` (Main entry point)
-- [ ] `/public_html/assets/` (Folder containing .css, .js, .png, .jpg files)
-    - [ ] Check for `index-DcQQoMRH.css` (or similar hash) inside assets
-- [ ] `/public_html/lavadora/`
-    - [ ] `/public_html/lavadora/index.html`
-- [ ] `/public_html/lavadora2/`
-    - [ ] `/public_html/lavadora2/index.html`
-- [ ] `/public_html/motoserra/`
-    - [ ] `/public_html/motoserra/index.html`
-- [ ] `/public_html/motoserra2/`
-    - [ ] `/public_html/motoserra2/index.html`
+## 2. CRITICAL WARNINGS
+-   **DO NOT** upload a `dist` folder into `public_html`. The *contents* of your local folder must go directly into `public_html`. If you see `/public_html/dist/...`, IT IS WRONG. Move the files up.
+-   **DO NOT** rename `assets` to anything else.
+-   **DO NOT** put `index.html` of sub-pages in the root naming them `lavadora.html`. They MUST be inside folders: `lavadora/index.html`.
 
-## 2. Asset Verification
+## 3. Validation Tests
+After upload, perform these checks:
 
-Open these URLs in your browser to confirm assets are reachable:
-
-- [ ] `https://yourdomain.com/assets/essenza_logo.png`
-- [ ] `https://yourdomain.com/assets/index-DcQQoMRH.css` (or exact name from your local /assets folder)
-
-## 3. White Screen Troubleshooting
-
-If you see a white screen on `/motoserra` or other pages:
-
-1.  **Open Developer Tools**: Right-click > Inspect > Console Tab.
-2.  **Check for Red Errors**:
-    -   **404 Not Found**: Means the file (CSS/JS) is missing or the path is wrong.
-        -   *Fix*: Ensure the request URL is `https://domain.com/assets/...` and NOT `https://domain.com/motoserra/assets/...`. (We fixed this by changing `./assets` to `/assets`).
-    -   **MIME Type Mismatch**: "Refused to apply style because MIME type is not text/css".
-        -   *Fix*: This usually means the 404 page (HTML) is being returned instead of the CSS file. Check that the CSS file actually exists at that exact path.
-
-## 4. Routing Checks
-
-- [ ] Visit `https://yourdomain.com/lavadora/` (with trailing slash) -> Should load.
-- [ ] Visit `https://yourdomain.com/lavadora` (no trailing slash) -> Should automatically add slash or load content.
-- [ ] Visit `https://yourdomain.com/non-existent-page` -> Should show the root `index.html` (Home page) due to SPA fallback.
-
-## 5. Cache Clearing
-
-- [ ] **Important**: After uploading new files, always clear your browser cache or test in Incognito/Private mode to see changes immediately.
+1.  **Redirect Check**:
+    -   Open `yourdomain.com/motoserra` (no slash).
+    -   Result: Should automatically change URL to `yourdomain.com/motoserra/` and load the page.
+2.  **White Screen Check**:
+    -   Open `yourdomain.com/motoserra/`.
+    -   Result: Page loads, images appear, NO white screen.
+3.  **Asset Check**:
+    -   Open `yourdomain.com/assets/index-DcQQoMRH.css`.
+    -   Result: Should see CSS code (not HTML, not 404).
+4.  **Fallback Check**:
+    -   Open `yourdomain.com/rota-que-nao-existe`.
+    -   Result: Should show the Home Page (root `index.html`).

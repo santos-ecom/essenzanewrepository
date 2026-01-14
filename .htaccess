@@ -1,18 +1,21 @@
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
-  
-  # Set default index file
-  DirectoryIndex index.html
 
-  # Prevent looping if index.html is requested
-  RewriteRule ^index\.html$ - [L]
+  # 1. REDIRECT: Enforce trailing slash for specific routes to avoid 404
+  # Redirect /slug to /slug/ (301 Permanent)
+  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)$ /$1/ [R=301,L]
 
-  # If correct file or directory exists, serve it directly
+  # 2. SERVE REAL FILES/DIRS: Prevent fallback for assets
+  # If the request matches a real file or directory, serve it directly.
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
+  # Exceptions: Don't serve directories if they are missing index.html (Apache usually handles this, but good to be safe)
   RewriteRule ^ - [L]
 
-  # Fallback to root index.html for SPA routing (if any) or 404 handling
+  # 3. SPA FALLBACK: Catch-all for non-existent routes
+  # Only if it's NOT a real file/dir (redundant check but safe)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
 </IfModule>
