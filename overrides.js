@@ -17,7 +17,7 @@ function applyEssenzaTheme() {
     const logoImgs = document.querySelectorAll('header img');
     logoImgs.forEach(img => {
         if (!img.src.includes('essenza_logo.png')) {
-            img.src = './assets/essenza_logo.png';
+            img.src = '/assets/essenza_logo.png';
             img.srcset = ''; // Clear srcset to prevent loading original responsive images
             img.style.maxHeight = '50px'; // Adjust size
             img.style.width = 'auto';
