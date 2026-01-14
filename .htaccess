@@ -4,21 +4,40 @@
   DirectoryIndex index.html
   Options -MultiViews
 
-  # 1. FORCE TRAILING SLASH (301 Redirect)
-  # Forces /motoserra -> /motoserra/
+  # 1. SMART FIX: Check if "dist" folder was uploaded incorrectly
+  # If /assets/ doesn't exist, but /dist/assets/ DOES, silently rewrite.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/dist/assets -d
+  RewriteRule ^assets/(.*)$ /dist/assets/$1 [L]
+
+  # Same for static pages
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/dist/motoserra -d
+  RewriteRule ^motoserra/(.*)$ /dist/motoserra/$1 [L]
+  
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/dist/lavadora -d
+  RewriteRule ^lavadora/(.*)$ /dist/lavadora/$1 [L]
+
+  # 2. Force Trailing Slash for cleanliness
+  RewriteCond %{REQUEST_URI} !/$
+  RewriteCond %{REQUEST_URI} !^/dist/
   RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)$ /$1/ [R=301,L]
 
-  # 2. EXPLICIT INTERAL REWRITE (The "Bulletproof" Fix)
-  # Directly maps the directory URL to the file. circumventing auto-discovery issues.
-  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)/$ $1/index.html [L]
-
-  # 3. ASSETS & EXEMPTIONS
-  # If it is a real file or directory, serve it correcty.
+  # 3. Standard Fallback checks
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # 4. SPA FALLBACK
-  # Any other route that is NOT a file/dir goes to root index.html
+  # 4. SPA Fallback (try dist/index.html if root missing)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/dist/index.html -f
+  RewriteRule . /dist/index.html [L]
+  
+  # 5. Ultimate Fallback
+  RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule . /index.html [L]
 </IfModule>
