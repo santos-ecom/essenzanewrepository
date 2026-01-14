@@ -1,5 +1,5 @@
 $path = "c:\Users\Usuario\Nova pasta"
-$port = 8000
+$port = 8081
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$port/")
 try {
@@ -12,13 +12,22 @@ try {
         
         $urlPath = $request.Url.LocalPath.TrimStart('/')
         if ($urlPath -eq "" -or $urlPath -eq "/") { $urlPath = "index.html" }
+        if ($urlPath -eq "motoserra") { $urlPath = "motoserra.html" }
         $filePath = Join-Path $path $urlPath
         
-        # Se o arquivo não existir, tenta servir o index.html (suporte para roteamento de SPA)
+        # Se o arquivo não existir:
         if (-not (Test-Path $filePath -PathType Leaf)) {
-            if ($urlPath -eq "motoserra") {
-                $filePath = Join-Path $path "motoserra.html"
-            } else {
+            # 1. Se for um arquivo de assets (js, css, img), tenta achar na pasta assets da raiz
+            if ($urlPath -match "/?assets/.*") {
+                $assetName = $urlPath.Split('/')[-1]
+                $assetPath = Join-Path $path "assets" $assetName
+                if (Test-Path $assetPath -PathType Leaf) {
+                    $filePath = $assetPath
+                }
+            }
+            
+            # 2. Se ainda não achou e não é asset (ou seja, é rota de navegação), serve index.html
+            if (-not (Test-Path $filePath -PathType Leaf) -and $urlPath -notmatch "\.(js|css|png|jpg|jpeg|svg|ico)$") {
                 $filePath = Join-Path $path "index.html"
             }
         }
