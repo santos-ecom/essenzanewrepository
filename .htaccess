@@ -3,15 +3,15 @@
   RewriteBase /
   DirectoryIndex index.html
 
-  # 1. REDIRECT: Enforce trailing slash for specific routes to avoid 404
-  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)$ /$1/ [R=301,L]
+  # 1. PROTECTED ROUTES: Do not rewrite these folders. Let Apache serve index.html inside them.
+  # This fixes the "White Screen" by preventing the SPA fallback from taking over.
+  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)(/.*)?$ - [L]
 
-  # 2. SERVE REAL FILES/DIRS: Prevent fallback for assets
-  RewriteCond %{REQUEST_FILENAME} -f [OR]
-  RewriteCond %{REQUEST_FILENAME} -d
-  RewriteRule ^ - [L]
+  # 2. ASSETS: Do not rewrite assets.
+  RewriteRule ^assets/ - [L]
+  RewriteRule ^overrides\.(css|js)$ - [L]
 
-  # 3. SPA FALLBACK: Catch-all for non-existent routes
+  # 3. SPA FALLBACK: For everything else (unknown routes), serve the App.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
