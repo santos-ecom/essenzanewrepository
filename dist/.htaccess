@@ -1,0 +1,24 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  DirectoryIndex index.html
+  Options -MultiViews
+
+  # 1. FORCE TRAILING SLASH (301 Redirect)
+  # Forces /motoserra -> /motoserra/
+  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)$ /$1/ [R=301,L]
+
+  # 2. EXPLICIT INTERAL REWRITE (The "Bulletproof" Fix)
+  # Directly maps the directory URL to the file. circumventing auto-discovery issues.
+  RewriteRule ^(lavadora|lavadora2|motoserra|motoserra2)/$ $1/index.html [L]
+
+  # 3. ASSETS & EXEMPTIONS
+  # If it is a real file or directory, serve it correcty.
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 4. SPA FALLBACK
+  # Any other route that is NOT a file/dir goes to root index.html
+  RewriteRule . /index.html [L]
+</IfModule>
