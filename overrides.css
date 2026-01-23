@@ -145,3 +145,13 @@ svg {
     background-color: var(--essenza-primary) !important;
     color: #FFFFFF !important;
 }
+
+/* User Request Overrides: Values and Icons to #0D2A3A */
+.text-price-sale,
+.text-price-sale span {
+    color: var(--essenza-primary) !important;
+}
+
+.bg-success {
+    background-color: var(--essenza-primary) !important;
+}
