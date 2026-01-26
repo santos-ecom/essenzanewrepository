@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function applyEssenzaTheme() {
+    // Logic disabled to allow manual logo changes
+    /*
     const logoImgs = document.querySelectorAll('header img');
     logoImgs.forEach(img => {
         if (!img.src.includes('essenza_logo.png')) {
@@ -15,4 +17,5 @@ function applyEssenzaTheme() {
             img.style.width = 'auto';
         }
     });
+    */
 }
